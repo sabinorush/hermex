@@ -11,6 +11,8 @@
     "db:down": "docker compose down",
     "dev:api": "pnpm --filter api dev",
     "build:api": "pnpm --filter api build",
+    "dev:web": "pnpm --filter web dev",
+    "build:web": "pnpm --filter web build",
     "prisma:generate": "pnpm --filter api exec prisma generate",
     "prisma:migrate": "pnpm --filter api exec prisma migrate dev"
   }
