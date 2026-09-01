@@ -91,7 +91,7 @@ Sem pasta `packages/` nesta fase — não há código compartilhado entre
 - Módulo `Prisma`: `PrismaService` estendendo `PrismaClient`, implementando
   `OnModuleInit` para conectar ao banco na inicialização do módulo.
 - `HealthModule` com `HealthResolver`: uma `Query('health')` que executa
-  `prisma.$queryRaw\`SELECT 1\``e retorna um objeto simples (ex:`{ status: 'ok', database: 'connected' }`), confirmando que
+  `` prisma.$queryRaw`SELECT 1` `` e retorna um objeto simples (ex: `{ status: 'ok', database: 'connected' }`), confirmando que
   Nest → Prisma → Postgres estão conectados ponta a ponta. Nenhum outro
   model ou resolver de negócio é criado nesta fase.
 
