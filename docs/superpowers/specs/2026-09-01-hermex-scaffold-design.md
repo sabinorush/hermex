@@ -136,3 +136,22 @@ Sem pasta `packages/` nesta fase — não há código compartilhado entre
 - CI/CD, deploy, observabilidade.
 - Testes automatizados além dos gerados por padrão pelos CLIs
   (`create-next-app` / `nest new`).
+
+## Decisões tomadas durante a implementação
+
+1. Postgres do docker-compose vinculado a `127.0.0.1` (não `0.0.0.0`) por
+   segurança.
+2. Imports relativos em `apps/api` usam extensão `.js` (projeto ESM/NodeNext
+   gerado pelo Nest CLI atual).
+3. Prisma fixado na versão `6.19.3` (CLI e client) — as tags `latest` do npm
+   estavam com majors incompatíveis no momento da execução.
+4. `@as-integrations/express5` adicionado como dependência direta —
+   necessário para o `GraphQLModule` mapear a rota `/graphql` no adapter
+   Express 5.
+5. `apps/api` usa oxlint (padrão atual do Nest CLI) em vez de ESLint — a
+   config compartilhada da raiz é estendida só por `apps/web`; as mesmas
+   regras (eqeqeq/no-console/prefer-const) foram espelhadas manualmente no
+   `oxlint.json` do `apps/api`.
+6. `create-next-app --use-pnpm` gera um workspace pnpm aninhado dentro de
+   `apps/web` — removido antes de rodar o `pnpm install` da raiz, para
+   `apps/web` entrar como membro comum do workspace.
