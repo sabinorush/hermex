@@ -8,3 +8,5 @@ coverage/
 .env.local
 .env.*.local
 .DS_Store
+apps/api/src/schema.gql
+*.tsbuildinfo
