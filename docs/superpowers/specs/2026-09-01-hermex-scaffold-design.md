@@ -15,15 +15,15 @@ Fonte: `PRD.md` na raiz do repositório.
 
 ## Decisões já fechadas com o usuário
 
-| Tema | Decisão |
-|---|---|
-| Escopo | Apenas scaffolding técnico, sem modelo de domínio |
-| Autenticação | Só estrutura preparada (pastas/placeholders), sem lib nem lógica real |
-| GraphQL | Code-first (decorators TypeScript) |
-| Nomes dos apps | `apps/web` (Next.js) e `apps/api` (Nest.js) |
-| Prova de conexão E2E | Query GraphQL `health` que roda `SELECT 1` via Prisma |
-| Docker-compose | Só Postgres (sem pgAdmin) |
-| Lint/format | Config compartilhada na raiz do monorepo |
+| Tema                 | Decisão                                                               |
+| -------------------- | --------------------------------------------------------------------- |
+| Escopo               | Apenas scaffolding técnico, sem modelo de domínio                     |
+| Autenticação         | Só estrutura preparada (pastas/placeholders), sem lib nem lógica real |
+| GraphQL              | Code-first (decorators TypeScript)                                    |
+| Nomes dos apps       | `apps/web` (Next.js) e `apps/api` (Nest.js)                           |
+| Prova de conexão E2E | Query GraphQL `health` que roda `SELECT 1` via Prisma                 |
+| Docker-compose       | Só Postgres (sem pgAdmin)                                             |
+| Lint/format          | Config compartilhada na raiz do monorepo                              |
 
 ## Arquitetura
 
@@ -91,8 +91,7 @@ Sem pasta `packages/` nesta fase — não há código compartilhado entre
 - Módulo `Prisma`: `PrismaService` estendendo `PrismaClient`, implementando
   `OnModuleInit` para conectar ao banco na inicialização do módulo.
 - `HealthModule` com `HealthResolver`: uma `Query('health')` que executa
-  `prisma.$queryRaw\`SELECT 1\`` e retorna um objeto simples (ex:
-  `{ status: 'ok', database: 'connected' }`), confirmando que
+  `prisma.$queryRaw\`SELECT 1\``e retorna um objeto simples (ex:`{ status: 'ok', database: 'connected' }`), confirmando que
   Nest → Prisma → Postgres estão conectados ponta a ponta. Nenhum outro
   model ou resolver de negócio é criado nesta fase.
 

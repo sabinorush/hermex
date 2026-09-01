@@ -5,7 +5,7 @@ Uma Locadora de veiculos.
 ## Monorepo
 
 PNPM workspaces
-Com atalhos no package.json usando o --filter para evitar navegar 
+Com atalhos no package.json usando o --filter para evitar navegar
 entre pastas antes de executar os scripts
 
 ## Front-end
