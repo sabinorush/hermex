@@ -18,8 +18,25 @@ model Location {
 }
 
 model Category {
-  id        String   @id @default(cuid())
-  name      String   @unique
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id        String    @id @default(cuid())
+  name      String    @unique
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  vehicles  Vehicle[]
+}
+
+model Vehicle {
+  id            String   @id @default(cuid())
+  brand         String
+  model         String
+  year          Int
+  licensePlate  String   @unique
+  dailyRate     Float
+  available     Boolean  @default(true)
+  imageUrl      String?
+  transmission  String
+  categoryId    String
+  category      Category @relation(fields: [categoryId], references: [id])
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 }

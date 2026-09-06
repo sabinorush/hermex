@@ -25,6 +25,39 @@ const locations = [
   },
 ];
 
+const vehicles = [
+  {
+    brand: 'Fiat',
+    model: 'Argo',
+    year: 2023,
+    licensePlate: 'ABC1D23',
+    dailyRate: 150,
+    imageUrl: null,
+    transmission: 'MANUAL',
+    categoryName: 'Hatch',
+  },
+  {
+    brand: 'Chevrolet',
+    model: 'Onix',
+    year: 2024,
+    licensePlate: 'DEF2E34',
+    dailyRate: 160,
+    imageUrl: null,
+    transmission: 'AUTOMATIC',
+    categoryName: 'Hatch',
+  },
+  {
+    brand: 'Jeep',
+    model: 'Compass',
+    year: 2024,
+    licensePlate: 'GHI3F45',
+    dailyRate: 320,
+    imageUrl: null,
+    transmission: 'AUTOMATIC',
+    categoryName: 'SUV',
+  },
+];
+
 async function main() {
   for (const name of categories) {
     await prisma.category.upsert({
@@ -41,6 +74,18 @@ async function main() {
       where: { name },
       update: data,
       create: location,
+    });
+  }
+
+  for (const { categoryName, ...vehicle } of vehicles) {
+    const category = await prisma.category.findUniqueOrThrow({
+      where: { name: categoryName },
+    });
+
+    await prisma.vehicle.upsert({
+      where: { licensePlate: vehicle.licensePlate },
+      update: { ...vehicle, categoryId: category.id },
+      create: { ...vehicle, categoryId: category.id },
     });
   }
 }
