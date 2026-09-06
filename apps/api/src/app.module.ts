@@ -7,6 +7,7 @@ import { AppController } from './app.controller.js';
 import { AppService } from './app.service.js';
 import { PrismaModule } from './prisma/prisma.module.js';
 import { HealthModule } from './health/health.module.js';
+import { CategoriesModule } from './categories/categories.module.js';
 import { LocationsModule } from './locations/locations.module.js';
 
 @Module({
@@ -19,6 +20,7 @@ import { LocationsModule } from './locations/locations.module.js';
     }),
     PrismaModule,
     HealthModule,
+    CategoriesModule,
     LocationsModule,
   ],
   controllers: [AppController],

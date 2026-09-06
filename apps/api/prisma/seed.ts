@@ -2,6 +2,8 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
+const categories = ['Hatch', 'Sedan', 'SUV', 'Minivan', 'Picape'];
+
 const locations = [
   {
     name: 'Aeroporto de Congonhas',
@@ -24,6 +26,14 @@ const locations = [
 ];
 
 async function main() {
+  for (const name of categories) {
+    await prisma.category.upsert({
+      where: { name },
+      update: {},
+      create: { name },
+    });
+  }
+
   for (const location of locations) {
     const { name, ...data } = location;
 
