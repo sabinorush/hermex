@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Geist, Geist_Mono } from 'next/font/google';
+import { Exo_2, Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
 
 const geistSans = Geist({
@@ -12,6 +12,12 @@ const geistMono = Geist_Mono({
   subsets: ['latin'],
 });
 
+const exo2 = Exo_2({
+  variable: '--font-exo-2',
+  subsets: ['latin'],
+  weight: ['700'],
+});
+
 export const metadata: Metadata = {
   title: 'Hermex',
   description: 'Hermex — locadora de veículos',
@@ -19,7 +25,10 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<'/'>) {
   return (
-    <html lang="pt-BR" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
+    <html
+      lang="pt-BR"
+      className={`${geistSans.variable} ${geistMono.variable} ${exo2.variable} h-full antialiased`}
+    >
       <head>
         {/* Root layout applies to every route; font-display:block is Google's own recommendation
         for icon fonts, to avoid flashing raw ligature text like "search". */}
