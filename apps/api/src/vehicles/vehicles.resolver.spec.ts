@@ -63,6 +63,16 @@ describe('VehiclesResolver', () => {
     expect(prisma.vehicle.findMany).toHaveBeenCalledWith(expect.objectContaining({ take: 27 }));
   });
 
+  it('clamps negative skip and take to 0 instead of passing them through to Prisma', async () => {
+    const { resolver, prisma } = createResolver([], 0);
+
+    await resolver.vehicles(undefined, -5, -5);
+
+    expect(prisma.vehicle.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({ skip: 0, take: 0 }),
+    );
+  });
+
   it('filters by categoryId, keeping available:true, and scopes totalCount to that category', async () => {
     const { resolver, prisma } = createResolver([vehicle], 1);
 

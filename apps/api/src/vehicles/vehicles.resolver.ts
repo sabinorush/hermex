@@ -28,14 +28,15 @@ export class VehiclesResolver {
       where.categoryId = categoryId;
     }
 
-    const clampedTake = Math.min(take, MAX_TAKE);
+    const clampedSkip = Math.max(skip, 0);
+    const clampedTake = Math.min(Math.max(take, 0), MAX_TAKE);
 
     const [vehicles, totalCount] = await Promise.all([
       this.prisma.vehicle.findMany({
         where,
         include: { category: true },
         orderBy: { createdAt: 'asc' },
-        skip,
+        skip: clampedSkip,
         take: clampedTake,
       }),
       this.prisma.vehicle.count({ where }),
