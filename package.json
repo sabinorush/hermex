@@ -15,6 +15,9 @@
     "build:web": "pnpm --filter web build",
     "prisma:generate": "pnpm --filter api exec prisma generate",
     "prisma:migrate": "pnpm --filter api exec prisma migrate dev",
+    "prisma:seed": "pnpm --filter api exec prisma db seed",
+    "storybook": "pnpm --filter web storybook",
+    "build-storybook": "pnpm --filter web build-storybook",
     "lint": "pnpm --filter web lint && pnpm --filter api lint",
     "format": "prettier --write .",
     "format:check": "prettier --check ."

@@ -54,3 +54,6 @@ and out of scope for this phase.
 | `db:down`         | Stop Postgres                            |
 | `prisma:generate` | Generate the Prisma client               |
 | `prisma:migrate`  | Run Prisma migrations in dev mode        |
+| `prisma:seed`     | Seed the database                        |
+| `storybook`       | Run Storybook for the web app            |
+| `build-storybook` | Build the static Storybook site          |
