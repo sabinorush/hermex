@@ -16,42 +16,88 @@ describe('VehiclesResolver', () => {
     category: { id: 'cat-1', name: 'Hatch' },
   };
 
-  function createResolver(vehicles: unknown[]) {
+  function createResolver(vehicles: unknown[], totalCount: number) {
     const prisma = {
       vehicle: {
         findMany: vi.fn().mockResolvedValue(vehicles),
+        count: vi.fn().mockResolvedValue(totalCount),
       },
     } as unknown as PrismaService;
     return { resolver: new VehiclesResolver(prisma), prisma };
   }
 
-  it('returns available vehicles with category and typed transmission when no categoryId is given', async () => {
-    const { resolver, prisma } = createResolver([vehicle]);
+  it('returns the first 9 vehicles and the totalCount when called with no args', async () => {
+    const { resolver, prisma } = createResolver([vehicle], 1);
 
-    await expect(resolver.vehicles()).resolves.toEqual([vehicle]);
+    await expect(resolver.vehicles()).resolves.toEqual({
+      items: [vehicle],
+      totalCount: 1,
+    });
     expect(prisma.vehicle.findMany).toHaveBeenCalledWith({
       where: { available: true },
       include: { category: true },
       orderBy: { createdAt: 'asc' },
+      skip: 0,
+      take: 9,
+    });
+    expect(prisma.vehicle.count).toHaveBeenCalledWith({
+      where: { available: true },
     });
   });
 
-  it('filters by categoryId when provided, keeping the available:true filter', async () => {
-    const { resolver, prisma } = createResolver([vehicle]);
+  it('returns the second page when skip and take are provided', async () => {
+    const { resolver, prisma } = createResolver([vehicle], 10);
 
-    await expect(resolver.vehicles('cat-1')).resolves.toEqual([vehicle]);
+    await resolver.vehicles(undefined, 9, 9);
+
+    expect(prisma.vehicle.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({ skip: 9, take: 9 }),
+    );
+  });
+
+  it('clamps take to 27 when a larger value is requested', async () => {
+    const { resolver, prisma } = createResolver([], 0);
+
+    await resolver.vehicles(undefined, 0, 100);
+
+    expect(prisma.vehicle.findMany).toHaveBeenCalledWith(expect.objectContaining({ take: 27 }));
+  });
+
+  it('clamps negative skip and take to 0 instead of passing them through to Prisma', async () => {
+    const { resolver, prisma } = createResolver([], 0);
+
+    await resolver.vehicles(undefined, -5, -5);
+
+    expect(prisma.vehicle.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({ skip: 0, take: 0 }),
+    );
+  });
+
+  it('filters by categoryId, keeping available:true, and scopes totalCount to that category', async () => {
+    const { resolver, prisma } = createResolver([vehicle], 1);
+
+    await expect(resolver.vehicles('cat-1')).resolves.toEqual({
+      items: [vehicle],
+      totalCount: 1,
+    });
     expect(prisma.vehicle.findMany).toHaveBeenCalledWith({
       where: { available: true, categoryId: 'cat-1' },
       include: { category: true },
       orderBy: { createdAt: 'asc' },
+      skip: 0,
+      take: 9,
+    });
+    expect(prisma.vehicle.count).toHaveBeenCalledWith({
+      where: { available: true, categoryId: 'cat-1' },
     });
   });
 
-  it('returns an empty list when categoryId matches no vehicles', async () => {
-    const { resolver } = createResolver([]);
+  it('returns an empty page with totalCount 0 when categoryId matches no vehicles', async () => {
+    const { resolver } = createResolver([], 0);
 
-    await expect(resolver.vehicles('categoria-inexistente')).resolves.toEqual(
-      [],
-    );
+    await expect(resolver.vehicles('categoria-inexistente')).resolves.toEqual({
+      items: [],
+      totalCount: 0,
+    });
   });
 });
