@@ -100,4 +100,70 @@ describe('VehiclesResolver', () => {
       totalCount: 0,
     });
   });
+
+  describe('searchVehicles', () => {
+    const baseInput = {
+      pickupLocationId: 'loc-1',
+      returnLocationId: 'loc-2',
+      pickupDate: new Date('2026-10-01T10:00:00.000Z'),
+      returnDate: new Date('2026-10-05T10:00:00.000Z'),
+    };
+
+    it('returns available vehicles when the input is valid', async () => {
+      const { resolver, prisma } = createResolver([vehicle], 1);
+
+      await expect(resolver.searchVehicles(baseInput)).resolves.toEqual({
+        items: [vehicle],
+        totalCount: 1,
+      });
+      expect(prisma.vehicle.findMany).toHaveBeenCalledWith({
+        where: { available: true },
+        include: { category: true },
+        orderBy: { createdAt: 'asc' },
+        skip: 0,
+        take: 9,
+      });
+    });
+
+    it('throws a descriptive error when returnDate is before pickupDate', async () => {
+      const { resolver } = createResolver([], 0);
+
+      await expect(
+        resolver.searchVehicles({
+          ...baseInput,
+          pickupDate: new Date('2026-10-05T10:00:00.000Z'),
+          returnDate: new Date('2026-10-01T10:00:00.000Z'),
+        }),
+      ).rejects.toThrow('returnDate deve ser posterior a pickupDate');
+    });
+
+    it('throws a descriptive error when returnDate equals pickupDate', async () => {
+      const { resolver } = createResolver([], 0);
+      const sameDate = new Date('2026-10-01T10:00:00.000Z');
+
+      await expect(
+        resolver.searchVehicles({ ...baseInput, pickupDate: sameDate, returnDate: sameDate }),
+      ).rejects.toThrow('returnDate deve ser posterior a pickupDate');
+    });
+
+    it('filters by categoryId when informed', async () => {
+      const { resolver, prisma } = createResolver([vehicle], 1);
+
+      await resolver.searchVehicles({ ...baseInput, categoryId: 'cat-1' });
+
+      expect(prisma.vehicle.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({ where: { available: true, categoryId: 'cat-1' } }),
+      );
+    });
+
+    it('applies skip and take from the input', async () => {
+      const { resolver, prisma } = createResolver([vehicle], 10);
+
+      await resolver.searchVehicles({ ...baseInput, skip: 9, take: 9 });
+
+      expect(prisma.vehicle.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({ skip: 9, take: 9 }),
+      );
+    });
+  });
 });
