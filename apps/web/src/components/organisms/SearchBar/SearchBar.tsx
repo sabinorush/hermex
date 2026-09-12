@@ -34,7 +34,7 @@ export function SearchBar({ onSearch }: SearchBarProps) {
   return (
     <form onSubmit={handleSubmit} className="w-full bg-brand-secondary-pure px-4 py-6 sm:px-6">
       <div className="mx-auto flex max-w-7xl flex-col gap-4">
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
           <TextField
             tone="inverted"
             icon="location_on"
@@ -61,8 +61,8 @@ export function SearchBar({ onSearch }: SearchBarProps) {
           />
         </div>
 
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-          <div className="grid flex-1 grid-cols-1 gap-4 sm:grid-cols-3">
+        <div className="flex flex-col gap-4 md:flex-row md:items-center">
+          <div className="grid flex-1 grid-cols-1 gap-4 md:grid-cols-3">
             <TextField
               tone="inverted"
               icon="location_on"
@@ -88,7 +88,7 @@ export function SearchBar({ onSearch }: SearchBarProps) {
               onChange={(event) => setReturnTime(event.target.value)}
             />
           </div>
-          <Button type="submit" variant="primary" className="w-full sm:w-auto">
+          <Button type="submit" variant="primary" className="w-full md:w-auto">
             Buscar
           </Button>
         </div>

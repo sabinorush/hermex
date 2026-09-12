@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite';
-import { expect, fn, userEvent, within } from 'storybook/test';
+import { expect, fireEvent, fn, userEvent, within } from 'storybook/test';
 
 import { SearchBar } from './SearchBar';
 
@@ -37,21 +37,55 @@ export const SubmitsStructuredData: Story = {
 
     await user.type(canvas.getByLabelText('Local de retirada'), 'São Paulo');
     await user.type(canvas.getByLabelText('Local de devolução'), 'Rio de Janeiro');
+    await fireEvent.change(canvas.getByLabelText('Data de retirada'), {
+      target: { value: '2026-10-10' },
+    });
+    await fireEvent.change(canvas.getByLabelText('Hora de retirada'), {
+      target: { value: '09:30' },
+    });
+    // Date ordering is intentionally left to the caller, per MEX-9.
+    await fireEvent.change(canvas.getByLabelText('Data de devolução'), {
+      target: { value: '2026-10-09' },
+    });
+    await fireEvent.change(canvas.getByLabelText('Hora de devolução'), {
+      target: { value: '18:45' },
+    });
     await user.click(canvas.getByRole('button', { name: /buscar/i }));
 
-    await expect(args.onSearch).toHaveBeenCalledWith(
-      expect.objectContaining({
-        pickupLocation: 'São Paulo',
-        returnLocation: 'Rio de Janeiro',
-      }),
-    );
+    await expect(args.onSearch).toHaveBeenCalledTimes(1);
+    await expect(args.onSearch).toHaveBeenCalledWith({
+      pickupLocation: 'São Paulo',
+      returnLocation: 'Rio de Janeiro',
+      pickupDate: '2026-10-10',
+      pickupTime: '09:30',
+      returnDate: '2026-10-09',
+      returnTime: '18:45',
+    });
+  },
+};
+
+export const SubmitsEmptyData: Story = {
+  play: async ({ canvas, args }) => {
+    await userEvent.click(canvas.getByRole('button', { name: /buscar/i }));
+
+    await expect(args.onSearch).toHaveBeenCalledTimes(1);
+    await expect(args.onSearch).toHaveBeenCalledWith({
+      pickupLocation: '',
+      returnLocation: '',
+      pickupDate: '',
+      pickupTime: '',
+      returnDate: '',
+      returnTime: '',
+    });
   },
 };
 
 // SearchBar uses bg-brand-secondary-pure (#1D2F40) — fails if Tailwind / global CSS did not load.
 export const CssCheck: Story = {
   play: async ({ canvasElement }) => {
-    const form = within(canvasElement).getByRole('button', { name: /buscar/i }).closest('form');
+    const form = within(canvasElement)
+      .getByRole('button', { name: /buscar/i })
+      .closest('form');
     await expect(form).not.toBeNull();
     await expect(getComputedStyle(form as HTMLElement).backgroundColor).toBe('rgb(29, 47, 64)');
   },

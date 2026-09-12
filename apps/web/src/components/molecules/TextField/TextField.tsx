@@ -33,7 +33,9 @@ export function TextField({
       )}
       <input
         className={`w-full bg-transparent text-sm focus:outline-none ${
-          isInverted ? 'text-white placeholder:text-white/70' : 'text-slate-900 placeholder:text-slate-400'
+          isInverted
+            ? 'text-white placeholder:text-white/70 [color-scheme:dark]'
+            : 'text-slate-900 placeholder:text-slate-400'
         }`}
         {...props}
       />
