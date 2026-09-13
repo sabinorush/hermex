@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { API_URL, fetchGraphQL, getVehicles, VEHICLES_QUERY } from './api';
+import { API_URL, fetchGraphQL, getHomeData, getVehicles, HOME_QUERY, VEHICLES_QUERY } from './api';
 
 describe('api helper', () => {
   const originalFetch = globalThis.fetch;
@@ -92,8 +92,46 @@ describe('api helper', () => {
       expect.objectContaining({
         body: JSON.stringify({
           query: VEHICLES_QUERY,
-          variables: { take: 9 },
+          variables: { take: 9, categoryId: undefined },
         }),
+      }),
+    );
+  });
+
+  it('getVehicles sends the selected category to GraphQL', async () => {
+    vi.mocked(globalThis.fetch).mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ data: { vehicles: { items: [], totalCount: 0 } } }),
+    } as Response);
+
+    await getVehicles(9, 'cat-1');
+
+    expect(globalThis.fetch).toHaveBeenCalledWith(
+      API_URL,
+      expect.objectContaining({
+        body: JSON.stringify({
+          query: VEHICLES_QUERY,
+          variables: { take: 9, categoryId: 'cat-1' },
+        }),
+      }),
+    );
+  });
+
+  it('getHomeData loads categories and vehicles in one request', async () => {
+    const homeData = {
+      categories: [{ id: 'cat-1', name: 'Hatch' }],
+      vehicles: { items: [], totalCount: 0 },
+    };
+    vi.mocked(globalThis.fetch).mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ data: homeData }),
+    } as Response);
+
+    await expect(getHomeData()).resolves.toEqual(homeData);
+    expect(globalThis.fetch).toHaveBeenCalledWith(
+      API_URL,
+      expect.objectContaining({
+        body: JSON.stringify({ query: HOME_QUERY, variables: { take: 9 } }),
       }),
     );
   });

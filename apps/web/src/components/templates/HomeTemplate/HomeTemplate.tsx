@@ -1,7 +1,5 @@
 'use client';
 
-import { useState } from 'react';
-
 import {
   Footer,
   Header,
@@ -18,20 +16,16 @@ type HomeTemplateProps = FooterProps & SearchBarProps & VehicleGridProps;
 export function HomeTemplate({
   vehicles,
   categories,
-  selectedCategoryId: controlledSelectedCategoryId,
+  selectedCategoryId,
   errorMessage,
-  onCategoryChange: controlledOnCategoryChange,
+  isLoading,
+  onCategoryChange,
   onDetailsClick,
   onSearch,
   whatsappHref,
   instagramHref,
   tiktokHref,
 }: HomeTemplateProps) {
-  const [internalCategoryId, setInternalCategoryId] = useState<string | null>(null);
-  const selectedCategoryId =
-    controlledSelectedCategoryId !== undefined ? controlledSelectedCategoryId : internalCategoryId;
-  const onCategoryChange = controlledOnCategoryChange ?? setInternalCategoryId;
-
   return (
     <div className="flex min-h-screen w-full flex-col bg-slate-50">
       <Header />
@@ -45,6 +39,7 @@ export function HomeTemplate({
           categories={categories}
           selectedCategoryId={selectedCategoryId}
           errorMessage={errorMessage}
+          isLoading={isLoading}
           onCategoryChange={onCategoryChange}
           onDetailsClick={onDetailsClick}
         />

@@ -22,6 +22,12 @@ export type GraphQLVehiclesData = {
   };
 };
 
+export type GraphQLCategoriesData = {
+  categories: GraphQLCategory[];
+};
+
+export type GraphQLHomeData = GraphQLCategoriesData & GraphQLVehiclesData;
+
 export type GraphQLResponse<T> = {
   data?: T;
   errors?: Array<{ message: string }>;

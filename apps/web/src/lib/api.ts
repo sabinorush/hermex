@@ -1,9 +1,33 @@
-import type { GraphQLResponse, GraphQLVehiclesData } from '@/types';
+import type { GraphQLHomeData, GraphQLResponse, GraphQLVehiclesData } from '@/types';
 
 export const API_URL = process.env.API_URL || 'http://localhost:3001/graphql';
 
 export const VEHICLES_QUERY = `
-  query GetVehicles($take: Int = 9) {
+  query GetVehicles($take: Int = 9, $categoryId: ID) {
+    vehicles(take: $take, categoryId: $categoryId) {
+      items {
+        id
+        brand
+        model
+        imageUrl
+        dailyRate
+        transmission
+        category {
+          id
+          name
+        }
+      }
+      totalCount
+    }
+  }
+`;
+
+export const HOME_QUERY = `
+  query GetHome($take: Int = 9) {
+    categories {
+      id
+      name
+    }
     vehicles(take: $take) {
       items {
         id
@@ -22,11 +46,15 @@ export const VEHICLES_QUERY = `
   }
 `;
 
+function getGraphQLEndpoint() {
+  return typeof window === 'undefined' ? API_URL : '/api/graphql';
+}
+
 export async function fetchGraphQL<T>(
   query: string,
   variables?: Record<string, unknown>,
 ): Promise<T> {
-  const response = await fetch(API_URL, {
+  const response = await fetch(getGraphQLEndpoint(), {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -55,7 +83,14 @@ export async function fetchGraphQL<T>(
   return json.data;
 }
 
-export async function getVehicles(take = 9) {
-  const data = await fetchGraphQL<GraphQLVehiclesData>(VEHICLES_QUERY, { take });
+export async function getVehicles(take = 9, categoryId?: string) {
+  const data = await fetchGraphQL<GraphQLVehiclesData>(VEHICLES_QUERY, {
+    take,
+    categoryId,
+  });
   return data.vehicles;
+}
+
+export function getHomeData(take = 9) {
+  return fetchGraphQL<GraphQLHomeData>(HOME_QUERY, { take });
 }

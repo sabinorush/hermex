@@ -71,23 +71,32 @@ describe('Home page', () => {
       totalCount: 1,
     };
 
-    vi.spyOn(api, 'getVehicles').mockResolvedValueOnce(mockVehicles);
+    vi.spyOn(api, 'getHomeData').mockResolvedValueOnce({
+      categories: [{ id: 'c-1', name: 'Hatch' }],
+      vehicles: mockVehicles,
+    });
 
     const jsx = await Home();
 
-    expect(jsx.props.vehicles).toHaveLength(1);
-    expect(jsx.props.vehicles[0].name).toBe('Fiat Argo');
-    expect(jsx.props.vehicles[0].category).toBe('Hatch Manual');
-    expect(jsx.props.errorMessage).toBeNull();
+    const homePageClient = jsx.props.children;
+    expect(homePageClient.props.initialVehicles).toHaveLength(1);
+    expect(homePageClient.props.initialVehicles[0].name).toBe('Fiat Argo');
+    expect(homePageClient.props.initialVehicles[0].category).toBe('Hatch Manual');
+    expect(homePageClient.props.categories).toEqual([{ id: 'c-1', name: 'Hatch' }]);
+    expect(homePageClient.props.initialErrorMessage).toBeNull();
   });
 
   it('handles API failure gracefully without throwing and provides friendly error message', async () => {
-    vi.spyOn(api, 'getVehicles').mockRejectedValueOnce(new Error('Connection refused'));
+    vi.spyOn(api, 'getHomeData').mockRejectedValueOnce(new Error('Connection refused'));
     vi.spyOn(console, 'error').mockImplementation(() => {});
 
     const jsx = await Home();
 
-    expect(jsx.props.vehicles).toEqual([]);
-    expect(jsx.props.errorMessage).toBe('Não foi possível carregar os veículos no momento.');
+    const homePageClient = jsx.props.children;
+    expect(homePageClient.props.initialVehicles).toEqual([]);
+    expect(homePageClient.props.categories).toEqual([]);
+    expect(homePageClient.props.initialErrorMessage).toBe(
+      'Não foi possível carregar os veículos no momento.',
+    );
   });
 });
