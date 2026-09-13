@@ -19,7 +19,7 @@ export function TextField({
     <div
       data-variant={variant}
       data-tone={tone}
-      className={`flex items-center gap-2 rounded-md border px-3 py-2 ${
+      className={`flex min-w-0 items-center gap-2 rounded-md border px-3 py-2 ${
         isInverted ? 'border-white bg-transparent' : 'border-black/10 bg-white'
       } ${className}`}
     >
@@ -32,7 +32,7 @@ export function TextField({
         </span>
       )}
       <input
-        className={`w-full bg-transparent text-sm focus:outline-none ${
+        className={`min-w-0 w-full bg-transparent text-sm focus:outline-none ${
           isInverted
             ? 'text-white placeholder:text-white/70 [color-scheme:dark]'
             : 'text-slate-900 placeholder:text-slate-400'
