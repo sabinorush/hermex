@@ -30,3 +30,5 @@ export function Footer({ whatsappHref, instagramHref, tiktokHref }: FooterProps)
     </footer>
   );
 }
+
+export type { FooterProps };
