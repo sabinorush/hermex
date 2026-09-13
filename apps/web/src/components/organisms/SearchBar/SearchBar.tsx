@@ -15,7 +15,7 @@ type SearchBarData = {
 };
 
 type SearchBarProps = {
-  onSearch: (data: SearchBarData) => void;
+  onSearch?: (data: SearchBarData) => void;
 };
 
 export function SearchBar({ onSearch }: SearchBarProps) {
@@ -28,7 +28,7 @@ export function SearchBar({ onSearch }: SearchBarProps) {
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    onSearch({ pickupLocation, returnLocation, pickupDate, pickupTime, returnDate, returnTime });
+    onSearch?.({ pickupLocation, returnLocation, pickupDate, pickupTime, returnDate, returnTime });
   }
 
   return (
