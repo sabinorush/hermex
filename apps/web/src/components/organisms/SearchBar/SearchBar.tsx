@@ -16,19 +16,45 @@ type SearchBarData = {
 
 type SearchBarProps = {
   onSearch?: (data: SearchBarData) => void;
+  onClearSearch?: () => void;
+  isSearchActive?: boolean;
 };
 
-export function SearchBar({ onSearch }: SearchBarProps) {
+const DATE_ERROR_MESSAGE = 'A data de devolução deve ser posterior à data de retirada.';
+
+function getSearchDateError(pickupDate: string, returnDate: string) {
+  if (!pickupDate || !returnDate) return null;
+
+  return new Date(returnDate) <= new Date(pickupDate) ? DATE_ERROR_MESSAGE : null;
+}
+
+export function SearchBar({ onSearch, onClearSearch, isSearchActive = false }: SearchBarProps) {
   const [pickupLocation, setPickupLocation] = useState('');
   const [pickupDate, setPickupDate] = useState('');
   const [pickupTime, setPickupTime] = useState('');
   const [returnLocation, setReturnLocation] = useState('');
   const [returnDate, setReturnDate] = useState('');
   const [returnTime, setReturnTime] = useState('');
+  const [dateError, setDateError] = useState<string | null>(null);
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    const nextDateError = getSearchDateError(pickupDate, returnDate);
+    setDateError(nextDateError);
+    if (nextDateError) return;
+
     onSearch?.({ pickupLocation, returnLocation, pickupDate, pickupTime, returnDate, returnTime });
+  }
+
+  function handleClear() {
+    setPickupLocation('');
+    setPickupDate('');
+    setPickupTime('');
+    setReturnLocation('');
+    setReturnDate('');
+    setReturnTime('');
+    setDateError(null);
+    onClearSearch?.();
   }
 
   return (
@@ -40,6 +66,7 @@ export function SearchBar({ onSearch }: SearchBarProps) {
             icon="location_on"
             placeholder="Local de retirada"
             aria-label="Local de retirada"
+            required
             value={pickupLocation}
             onChange={(event) => setPickupLocation(event.target.value)}
           />
@@ -48,8 +75,12 @@ export function SearchBar({ onSearch }: SearchBarProps) {
             icon="calendar_today"
             type="date"
             aria-label="Data de retirada"
+            required
             value={pickupDate}
-            onChange={(event) => setPickupDate(event.target.value)}
+            onChange={(event) => {
+              setPickupDate(event.target.value);
+              setDateError(null);
+            }}
           />
           <TextField
             tone="inverted"
@@ -68,6 +99,7 @@ export function SearchBar({ onSearch }: SearchBarProps) {
               icon="location_on"
               placeholder="Local de devolução"
               aria-label="Local de devolução"
+              required
               value={returnLocation}
               onChange={(event) => setReturnLocation(event.target.value)}
             />
@@ -76,8 +108,14 @@ export function SearchBar({ onSearch }: SearchBarProps) {
               icon="calendar_today"
               type="date"
               aria-label="Data de devolução"
+              required
+              aria-describedby={dateError ? 'search-date-error' : undefined}
+              aria-invalid={Boolean(dateError)}
               value={returnDate}
-              onChange={(event) => setReturnDate(event.target.value)}
+              onChange={(event) => {
+                setReturnDate(event.target.value);
+                setDateError(null);
+              }}
             />
             <TextField
               tone="inverted"
@@ -88,13 +126,26 @@ export function SearchBar({ onSearch }: SearchBarProps) {
               onChange={(event) => setReturnTime(event.target.value)}
             />
           </div>
-          <Button type="submit" variant="primary" className="w-full lg:w-auto">
-            Buscar
-          </Button>
+          <div className="flex w-full flex-col gap-2 sm:flex-row lg:w-auto">
+            {isSearchActive ? (
+              <Button type="button" onClick={handleClear} className="w-full whitespace-nowrap">
+                Limpar busca
+              </Button>
+            ) : null}
+            <Button type="submit" variant="primary" className="w-full lg:w-auto">
+              Buscar
+            </Button>
+          </div>
         </div>
+        {dateError ? (
+          <p id="search-date-error" role="alert" className="text-sm font-medium text-red-200">
+            {dateError}
+          </p>
+        ) : null}
       </div>
     </form>
   );
 }
 
+export { DATE_ERROR_MESSAGE, getSearchDateError };
 export type { SearchBarData, SearchBarProps };

@@ -1,6 +1,15 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { API_URL, fetchGraphQL, getHomeData, getVehicles, HOME_QUERY, VEHICLES_QUERY } from './api';
+import {
+  API_URL,
+  fetchGraphQL,
+  getHomeData,
+  getVehicles,
+  HOME_QUERY,
+  SEARCH_VEHICLES_QUERY,
+  searchVehicles,
+  VEHICLES_QUERY,
+} from './api';
 
 describe('api helper', () => {
   const originalFetch = globalThis.fetch;
@@ -132,6 +141,29 @@ describe('api helper', () => {
       API_URL,
       expect.objectContaining({
         body: JSON.stringify({ query: HOME_QUERY, variables: { take: 9 } }),
+      }),
+    );
+  });
+
+  it('searchVehicles sends dates, locations and category to GraphQL', async () => {
+    vi.mocked(globalThis.fetch).mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ data: { searchVehicles: { items: [], totalCount: 0 } } }),
+    } as Response);
+    const input = {
+      pickupLocationId: 'São Paulo',
+      returnLocationId: 'Rio de Janeiro',
+      pickupDate: '2026-10-10T12:30:00.000Z',
+      returnDate: '2026-10-12T21:00:00.000Z',
+      categoryId: 'cat-1',
+      take: 9,
+    };
+
+    await expect(searchVehicles(input)).resolves.toEqual({ items: [], totalCount: 0 });
+    expect(globalThis.fetch).toHaveBeenCalledWith(
+      API_URL,
+      expect.objectContaining({
+        body: JSON.stringify({ query: SEARCH_VEHICLES_QUERY, variables: { input } }),
       }),
     );
   });
