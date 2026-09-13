@@ -1,12 +1,16 @@
 import { Logo, SocialIcon } from '@/components/atoms';
 
 type FooterProps = {
-  whatsappHref: string;
-  instagramHref: string;
-  tiktokHref: string;
+  whatsappHref?: string;
+  instagramHref?: string;
+  tiktokHref?: string;
 };
 
-export function Footer({ whatsappHref, instagramHref, tiktokHref }: FooterProps) {
+export function Footer({
+  whatsappHref = 'https://www.whatsapp.com/',
+  instagramHref = 'https://www.instagram.com/',
+  tiktokHref = 'https://www.tiktok.com/',
+}: FooterProps) {
   return (
     <footer className="w-full bg-brand-secondary-pure text-white">
       <div className="mx-auto flex max-w-7xl flex-col gap-10 px-4 py-10 sm:px-6 md:flex-row md:items-end md:justify-between md:py-12">

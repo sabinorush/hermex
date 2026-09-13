@@ -77,6 +77,19 @@ export const Empty: Story = {
   },
 };
 
+export const ErrorState: Story = {
+  args: {
+    vehicles: [],
+    errorMessage: 'Não foi possível carregar os veículos no momento.',
+  },
+  play: async ({ canvas }) => {
+    await expect(canvas.getByTestId('vehicle-grid-error')).toBeVisible();
+    await expect(
+      canvas.getByText('Não foi possível carregar os veículos no momento.'),
+    ).toBeVisible();
+  },
+};
+
 export const Tablet: Story = {
   globals: {
     viewport: { value: 'tablet', isRotated: false },

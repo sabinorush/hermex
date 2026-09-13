@@ -17,17 +17,19 @@ type VehicleGridCategory = {
 
 type VehicleGridProps = {
   vehicles: VehicleGridVehicle[];
-  categories: VehicleGridCategory[];
-  selectedCategoryId: string | null;
-  onCategoryChange: (categoryId: string | null) => void;
-  onDetailsClick: (vehicleId: string) => void;
+  categories?: VehicleGridCategory[];
+  selectedCategoryId?: string | null;
+  errorMessage?: string | null;
+  onCategoryChange?: (categoryId: string | null) => void;
+  onDetailsClick?: (vehicleId: string) => void;
 };
 
 export function VehicleGrid({
   vehicles,
-  categories,
-  selectedCategoryId,
-  onCategoryChange,
+  categories = [],
+  selectedCategoryId = null,
+  errorMessage = null,
+  onCategoryChange = () => {},
   onDetailsClick,
 }: VehicleGridProps) {
   return (
@@ -45,7 +47,17 @@ export function VehicleGrid({
           onChange={onCategoryChange}
         />
 
-        {vehicles.length === 0 ? (
+        {errorMessage ? (
+          <div
+            data-testid="vehicle-grid-error"
+            className="rounded-xl bg-white px-6 py-12 text-center text-slate-600 shadow-sm"
+          >
+            <p className="font-semibold text-brand-secondary-pure">{errorMessage}</p>
+            <p className="mt-1 text-sm text-slate-500">
+              Não foi possível carregar os veículos no momento. Tente novamente mais tarde.
+            </p>
+          </div>
+        ) : vehicles.length === 0 ? (
           <p className="rounded-xl bg-white px-6 py-12 text-center text-slate-600 shadow-sm">
             Nenhum veículo encontrado
           </p>
@@ -61,7 +73,7 @@ export function VehicleGrid({
                 name={vehicle.name}
                 category={vehicle.category}
                 pricePerDay={vehicle.pricePerDay}
-                onDetailsClick={() => onDetailsClick(vehicle.id)}
+                onDetailsClick={() => onDetailsClick?.(vehicle.id)}
               />
             ))}
           </div>
