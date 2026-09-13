@@ -43,9 +43,8 @@ export const SubmitsStructuredData: Story = {
     await fireEvent.change(canvas.getByLabelText('Hora de retirada'), {
       target: { value: '09:30' },
     });
-    // Date ordering is intentionally left to the caller, per MEX-9.
     await fireEvent.change(canvas.getByLabelText('Data de devolução'), {
-      target: { value: '2026-10-09' },
+      target: { value: '2026-10-12' },
     });
     await fireEvent.change(canvas.getByLabelText('Hora de devolução'), {
       target: { value: '18:45' },
@@ -58,25 +57,38 @@ export const SubmitsStructuredData: Story = {
       returnLocation: 'Rio de Janeiro',
       pickupDate: '2026-10-10',
       pickupTime: '09:30',
-      returnDate: '2026-10-09',
+      returnDate: '2026-10-12',
       returnTime: '18:45',
     });
   },
 };
 
-export const SubmitsEmptyData: Story = {
+export const RequiresSearchFields: Story = {
   play: async ({ canvas, args }) => {
     await userEvent.click(canvas.getByRole('button', { name: /buscar/i }));
 
-    await expect(args.onSearch).toHaveBeenCalledTimes(1);
-    await expect(args.onSearch).toHaveBeenCalledWith({
-      pickupLocation: '',
-      returnLocation: '',
-      pickupDate: '',
-      pickupTime: '',
-      returnDate: '',
-      returnTime: '',
+    await expect(args.onSearch).not.toHaveBeenCalled();
+  },
+};
+
+export const RejectsInvalidDateRange: Story = {
+  play: async ({ canvas, args }) => {
+    const user = userEvent.setup();
+
+    await user.type(canvas.getByLabelText('Local de retirada'), 'São Paulo');
+    await user.type(canvas.getByLabelText('Local de devolução'), 'Rio de Janeiro');
+    await fireEvent.change(canvas.getByLabelText('Data de retirada'), {
+      target: { value: '2026-10-10' },
     });
+    await fireEvent.change(canvas.getByLabelText('Data de devolução'), {
+      target: { value: '2026-10-09' },
+    });
+    await user.click(canvas.getByRole('button', { name: /buscar/i }));
+
+    await expect(canvas.getByRole('alert')).toHaveTextContent(
+      'A data de devolução deve ser posterior à data de retirada.',
+    );
+    await expect(args.onSearch).not.toHaveBeenCalled();
   },
 };
 

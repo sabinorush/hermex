@@ -1,4 +1,10 @@
-import type { GraphQLHomeData, GraphQLResponse, GraphQLVehiclesData } from '@/types';
+import type {
+  GraphQLHomeData,
+  GraphQLResponse,
+  GraphQLSearchVehiclesData,
+  GraphQLVehiclesData,
+  SearchVehiclesInput,
+} from '@/types';
 
 export const API_URL = process.env.API_URL || 'http://localhost:3001/graphql';
 
@@ -29,6 +35,26 @@ export const HOME_QUERY = `
       name
     }
     vehicles(take: $take) {
+      items {
+        id
+        brand
+        model
+        imageUrl
+        dailyRate
+        transmission
+        category {
+          id
+          name
+        }
+      }
+      totalCount
+    }
+  }
+`;
+
+export const SEARCH_VEHICLES_QUERY = `
+  query SearchVehicles($input: SearchVehiclesInput!) {
+    searchVehicles(input: $input) {
       items {
         id
         brand
@@ -89,6 +115,11 @@ export async function getVehicles(take = 9, categoryId?: string) {
     categoryId,
   });
   return data.vehicles;
+}
+
+export async function searchVehicles(input: SearchVehiclesInput) {
+  const data = await fetchGraphQL<GraphQLSearchVehiclesData>(SEARCH_VEHICLES_QUERY, { input });
+  return data.searchVehicles;
 }
 
 export function getHomeData(take = 9) {

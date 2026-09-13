@@ -22,6 +22,8 @@ export function HomeTemplate({
   onCategoryChange,
   onDetailsClick,
   onSearch,
+  onClearSearch,
+  isSearchActive,
   whatsappHref,
   instagramHref,
   tiktokHref,
@@ -32,7 +34,11 @@ export function HomeTemplate({
       <main className="flex-1">
         <HeroBanner />
         <div data-testid="search-overlap" className="relative z-10 -mt-24 sm:-mt-28 lg:-mt-32">
-          <SearchBar onSearch={onSearch} />
+          <SearchBar
+            onSearch={onSearch}
+            onClearSearch={onClearSearch}
+            isSearchActive={isSearchActive}
+          />
         </div>
         <VehicleGrid
           vehicles={vehicles}

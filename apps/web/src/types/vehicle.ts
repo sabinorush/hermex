@@ -22,6 +22,19 @@ export type GraphQLVehiclesData = {
   };
 };
 
+export type SearchVehiclesInput = {
+  pickupLocationId: string;
+  returnLocationId: string;
+  pickupDate: string;
+  returnDate: string;
+  categoryId?: string;
+  take?: number;
+};
+
+export type GraphQLSearchVehiclesData = {
+  searchVehicles: GraphQLVehiclesData['vehicles'];
+};
+
 export type GraphQLCategoriesData = {
   categories: GraphQLCategory[];
 };
